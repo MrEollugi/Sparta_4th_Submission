@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class JumpPad : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private float jumpForce = 10f;
+    [SerializeField] private string playerTag = "Player";
 
-    // Update is called once per frame
-    void Update()
+    private void OnCollisionEnter(Collision collision)
     {
-        
+        if (collision.gameObject.CompareTag(playerTag))
+        {
+            Rigidbody rb = collision.gameObject.GetComponent<Rigidbody>();
+            if(rb != null)
+            {
+                rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            }
+        }
     }
 }
