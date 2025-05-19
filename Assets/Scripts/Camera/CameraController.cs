@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    public static CameraController Instance { get; private set; }
+
     public Transform target;
 
     [Header("View Settings")]
@@ -17,6 +19,18 @@ public class CameraController : MonoBehaviour
     private float yaw, pitch;
 
     private bool isFirstPerson = false;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+
+    }
 
     private void Start()
     {
@@ -44,14 +58,25 @@ public class CameraController : MonoBehaviour
 
         transform.position = desiredPosition;
         transform.rotation = rotation;
+
         if (!isFirstPerson)
         {
-            transform.LookAt(isFirstPerson ? (target.position + Vector3.up * 1.6f) : target.position);
+            transform.LookAt(target.position);
         }
     }
 
     public bool IsFirstPerson()
     {
         return isFirstPerson;
+    }
+
+    public Ray? TryGetInspectRay()
+    {
+        if (!isFirstPerson)
+        {
+            return null;
+        }
+
+        return new Ray(transform.position, transform.forward);
     }
 }
