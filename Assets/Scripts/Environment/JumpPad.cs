@@ -7,11 +7,11 @@ public class JumpPad : MonoBehaviour
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private string playerTag = "Player";
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.gameObject.CompareTag(playerTag))
+        if (other.gameObject.CompareTag(playerTag))
         {
-            Rigidbody rb = collision.gameObject.GetComponent<Rigidbody>();
+            Rigidbody rb = other.gameObject.GetComponent<Rigidbody>();
             if(rb != null)
             {
                 rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
