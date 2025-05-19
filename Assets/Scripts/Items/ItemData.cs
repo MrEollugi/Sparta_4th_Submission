@@ -1,18 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemData : MonoBehaviour
+[CreateAssetMenu(fileName = "New Item", menuName = "Items/Item Data")]
+public class ItemData : ScriptableObject
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public string itemName;
+    [TextArea]
+    public string description;
+    public Sprite icon;
+    public ItemType itemType;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public float healAmount;
+    public float speedBoostAmount;
+    public float duration;
 }
