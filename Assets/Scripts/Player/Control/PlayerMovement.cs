@@ -41,6 +41,10 @@ public class PlayerMovement : MonoBehaviour
             camRight.Normalize();
 
             Vector3 moveDir = camForward * inputDirection.y + camRight * inputDirection.x;
+
+            Quaternion targetRotation = Quaternion.LookRotation(moveDir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * 10f);
+
             rb.velocity = new Vector3(moveDir.x * moveSpeed, rb.velocity.y, moveDir.z * moveSpeed);
         }
         else
