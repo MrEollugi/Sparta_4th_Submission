@@ -5,15 +5,15 @@ using UnityEngine.UI;
 
 public class HealthBarUI : MonoBehaviour
 {
-    [SerializeField] private Slider healthBar;
+    [SerializeField] private Image healthImage;
 
-    private void Update()
+    private void LateUpdate()
     {
-        if(Player.Instance != null)
+        if(Player.Instance != null && healthImage != null)
         {
             float hp = Player.Instance.GetCurrentHealth();
             float maxHp = Player.Instance.GetMaxHealth();
-            healthBar.value = hp / maxHp;
+            healthImage.fillAmount = hp / maxHp;
         }
     }
 }
