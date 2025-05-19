@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerInteract: MonoBehaviour, IPlayerInputReceiver
+public class PlayerInteract: MonoBehaviour
 {
     [SerializeField] private LayerMask interactableLayer;
     [SerializeField] private float interactRange = 3f;

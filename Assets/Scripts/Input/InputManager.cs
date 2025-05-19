@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,8 @@ public class InputManager : MonoBehaviour
     public IPlayerInputReceiver CurrentReceiver { get; set; }
 
     public PlayerInputActions inputActions { get; private set; }
+
+    public Vector2 MoveInput => inputActions.Player.Move.ReadValue<Vector2>();
 
     private void Awake()
     {
@@ -23,6 +26,8 @@ public class InputManager : MonoBehaviour
         inputActions = new PlayerInputActions();
 
         inputActions.Player.Move.performed += OnMovePerformed;
+        inputActions.Player.Move.canceled += OnMoveCanceled;
+
         inputActions.Player.Jump.performed += OnJumpPerformed;
         inputActions.Player.Interact.performed += OnInteractPerformed;
     }
@@ -37,10 +42,14 @@ public class InputManager : MonoBehaviour
     {
         inputActions.Disable();
     }
-
     private void OnMovePerformed(InputAction.CallbackContext context)
     {
         CurrentReceiver?.OnMove(context.ReadValue<Vector2>());
+    }
+
+    private void OnMoveCanceled(InputAction.CallbackContext context)
+    {
+        CurrentReceiver?.OnMove(Vector2.zero);
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext context)

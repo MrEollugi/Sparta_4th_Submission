@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 1256038431}
   - component: {fileID: 1256038430}
   - component: {fileID: 1256038429}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,7 +224,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 10, y: 10, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -385,7 +385,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1948746871761933288, guid: 0f17d30f281de8340be08bfea2086f02, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 1948746871761933288, guid: 0f17d30f281de8340be08bfea2086f02, type: 3}
       propertyPath: m_LocalPosition.z
@@ -418,6 +418,18 @@ PrefabInstance:
     - target: {fileID: 1948746871761933288, guid: 0f17d30f281de8340be08bfea2086f02, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5844322373330401257, guid: 0f17d30f281de8340be08bfea2086f02, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5844322373330401257, guid: 0f17d30f281de8340be08bfea2086f02, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7361050486785020408, guid: 0f17d30f281de8340be08bfea2086f02, type: 3}
+      propertyPath: moveSpeed
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

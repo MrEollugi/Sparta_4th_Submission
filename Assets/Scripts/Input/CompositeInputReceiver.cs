@@ -15,7 +15,12 @@ public class CompositeInputReceiver : MonoBehaviour, IPlayerInputReceiver
         playerJump = GetComponent<PlayerJump>();
         playerInteract = GetComponent<PlayerInteract>();
 
-        InputManager.Instance.CurrentReceiver = this;
+        if (InputManager.Instance != null)
+        {
+            InputManager.Instance.CurrentReceiver = this;
+            Debug.Log("[CompositeInputReceiver] Set as current receiver.");
+        }
+
     }
 
     public void OnMove(Vector2 direction)
