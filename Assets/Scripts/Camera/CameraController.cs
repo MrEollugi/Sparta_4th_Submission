@@ -43,12 +43,6 @@ public class CameraController : MonoBehaviour
         yaw += Input.GetAxis("Mouse X") * sensitivity;
         pitch -= Input.GetAxis("Mouse Y") * sensitivity;
         pitch = Mathf.Clamp(pitch, pitchMin, pitchMax);
-
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            isFirstPerson = !isFirstPerson;
-            currentOffset = isFirstPerson ? firstPersonOffset : thirdPersonOffset;
-        }
     }
 
     private void LateUpdate()
@@ -78,5 +72,11 @@ public class CameraController : MonoBehaviour
         }
 
         return new Ray(transform.position, transform.forward);
+    }
+
+    public void ToggleView()
+    {
+        isFirstPerson = !isFirstPerson;
+        currentOffset = isFirstPerson ? firstPersonOffset : thirdPersonOffset;
     }
 }

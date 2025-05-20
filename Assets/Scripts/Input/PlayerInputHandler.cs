@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class PlayerInputHandler : MonoBehaviour, IPlayerInputReceiver
 {
+    private PlayerInventory inventory;
+    private CameraController cameraController;
+
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private PlayerJump playerJump;
     [SerializeField] private PlayerInteract playerInteract;
@@ -22,6 +25,12 @@ public class PlayerInputHandler : MonoBehaviour, IPlayerInputReceiver
 
     }
 
+    private void Start()
+    {
+        inventory = Player.Instance?.Inventory;
+        cameraController = CameraController.Instance;
+    }
+
     public void OnMove(Vector2 direction)
     {
         playerMovement?.OnMove(direction);
@@ -36,4 +45,25 @@ public class PlayerInputHandler : MonoBehaviour, IPlayerInputReceiver
     {
         playerInteract?.OnInteract();
     }
+
+    public void OnSwitchView()
+    {
+        cameraController.ToggleView();
+    }
+
+    public void OnUseItem()
+    {
+        inventory.UseCurrentItem();
+    }
+
+    public void OnDropItem()
+    {
+        inventory.DropCurrentItem();
+    }
+
+    public void OnSwitchSlot()
+    {
+        inventory.SwitchSlot();
+    }
+
 }
