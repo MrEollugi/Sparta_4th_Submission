@@ -21,6 +21,7 @@ public class PlayerInventory : MonoBehaviour
             if (slots[i] == null)
             {
                 slots[i] = item;
+                Debug.Log($"[Inventory] Picked up item: {item.itemName}");
                 UpdateUI();
                 return true;
             }
@@ -45,11 +46,18 @@ public class PlayerInventory : MonoBehaviour
 
     public void DropCurrentItem()
     {
-        if(slots[selectedIndex] != null)
+        var item = slots[selectedIndex];
+        if (item == null) return;
+
+        Vector3 dropPos = Player.Instance.transform.position + Player.Instance.transform.forward * 1.5f;
+        dropPos.y = 1f;
+        if (item.itemPrefab != null)
         {
-            slots[selectedIndex] = null;
-            UpdateUI();
+            GameObject dropped = Instantiate(item.itemPrefab, dropPos, Quaternion.identity);
         }
+
+        slots[selectedIndex] = null;
+        UpdateUI();
     }
 
     public void SwitchSlot()
