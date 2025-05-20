@@ -8,7 +8,13 @@ public class PlayerInventory : MonoBehaviour
     private ItemData[] slots = new ItemData[2];
     private int selectedIndex = 0;
 
-    public void Pickup(ItemData item)
+    private void Start()
+    {
+        selectedIndex = 0;
+        UpdateUI();
+    }
+
+    public bool Pickup(ItemData item)
     {
         for(int i = 0; i < slots.Length; i++)
         {
@@ -16,18 +22,25 @@ public class PlayerInventory : MonoBehaviour
             {
                 slots[i] = item;
                 UpdateUI();
-                return;
+                return true;
             }
         }
+
+        return false;
     }
 
     public void UseCurrentItem()
     {
-        if (slots[selectedIndex] != null)
+        var item = slots[selectedIndex];
+        if (item == null) return;
+
+        foreach (var effect in item.effects)
         {
-            slots[selectedIndex] = null;
-            UpdateUI();
+            effect.ApplyEffect(Player.Instance);
         }
+
+        slots[selectedIndex] = null;
+        UpdateUI();
     }
 
     public void DropCurrentItem()

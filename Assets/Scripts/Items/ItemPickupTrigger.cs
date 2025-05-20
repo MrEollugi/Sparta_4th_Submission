@@ -10,8 +10,16 @@ public class ItemPickupTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            other.GetComponent<PlayerInventory>()?.Pickup(itemData);
-            Destroy(gameObject);
+            var inventory = other.GetComponent<PlayerInventory>();
+
+            if (inventory != null)
+            {
+                bool success = inventory.Pickup(itemData);
+                if (success)
+                {
+                    Destroy(gameObject);
+                }
+            }
         }
     }
 }

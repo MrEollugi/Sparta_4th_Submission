@@ -9,9 +9,12 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
     private float moveSpeed = 5f;
+    private float currentMoveSpeed;
     //private float iceControlMultiplier = 0.05f;
     //private float airControlMultiplier = 0.5f;
     //private float frictionDamping = 0.9f;
+
+    private Coroutine speedBoostCoroutine;
 
     private Vector2 inputDirection;
     private Rigidbody rb;
@@ -22,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        currentMoveSpeed = moveSpeed;
     }
 
     public void OnMove(Vector2 direction)
@@ -45,12 +49,28 @@ public class PlayerMovement : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * 10f);
 
-            rb.velocity = new Vector3(moveDir.x * moveSpeed, rb.velocity.y, moveDir.z * moveSpeed);
+            rb.velocity = new Vector3(moveDir.x * currentMoveSpeed, rb.velocity.y, moveDir.z * currentMoveSpeed);
         }
         else
         {
             rb.velocity = new Vector3(0, rb.velocity.y, 0);
         }
+    }
+
+    public IEnumerator ApplySpeedBoost(float boostAmount, float duration)
+    {
+        if (speedBoostCoroutine != null)
+            StopCoroutine(speedBoostCoroutine);
+
+        speedBoostCoroutine = StartCoroutine(SpeedBoostRoutine(boostAmount, duration));
+        yield return speedBoostCoroutine;
+    }
+
+    private IEnumerator SpeedBoostRoutine(float boostAmount, float duration)
+    {
+        currentMoveSpeed += boostAmount;
+        yield return new WaitForSeconds(duration);
+        currentMoveSpeed = moveSpeed;
     }
 
     //private void UpdateGroundCheck()

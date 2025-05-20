@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Item", menuName = "Items/Item Data")]
@@ -7,9 +8,7 @@ public class ItemData : ScriptableObject
     [TextArea]
     public string description;
     public Sprite icon;
-    public ItemType itemType;
+    public GameObject itemPrefab;
 
-    public float healAmount;
-    public float speedBoostAmount;
-    public float duration;
+    public List<ItemEffect> effects;
 }
