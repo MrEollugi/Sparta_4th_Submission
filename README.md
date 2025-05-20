@@ -34,6 +34,10 @@ A Unity prototype featuring player movement, item interaction, and modular gamep
 ### Environment Interactives
 - Jump pads that launch the player upward on contact
 
+### System For Test
+- H: Reduce HP (10)
+- J: Restore HP (10)
+
 ---
 
 ## Tech Stack
