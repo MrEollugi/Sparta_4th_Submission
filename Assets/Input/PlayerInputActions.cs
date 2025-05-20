@@ -53,6 +53,42 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SwitchView"",
+                    ""type"": ""Button"",
+                    ""id"": ""149e43f0-6e96-453e-8e91-a8480d9047fe"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""61368c2b-e54a-4432-8ef0-ba10b521d106"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DropItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""8f868404-82db-40ca-8b9c-8c60965fc41a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SwitchSlot"",
+                    ""type"": ""Button"",
+                    ""id"": ""5f22b700-b7b0-45b4-bcd8-0d4ce3e4fb5a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -165,6 +201,50 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c158d63d-06f3-4038-aa2f-997b9e11e46c"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwitchView"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a9a75418-2439-44da-91f0-545406e47b0b"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UseItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b746ef2e-5222-4274-be09-a5988512e945"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DropItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""77e20384-dd99-48c1-b17b-0378c80f1ff3"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwitchSlot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -176,6 +256,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
+        m_Player_SwitchView = m_Player.FindAction("SwitchView", throwIfNotFound: true);
+        m_Player_UseItem = m_Player.FindAction("UseItem", throwIfNotFound: true);
+        m_Player_DropItem = m_Player.FindAction("DropItem", throwIfNotFound: true);
+        m_Player_SwitchSlot = m_Player.FindAction("SwitchSlot", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -240,6 +324,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Jump;
     private readonly InputAction m_Player_Interact;
+    private readonly InputAction m_Player_SwitchView;
+    private readonly InputAction m_Player_UseItem;
+    private readonly InputAction m_Player_DropItem;
+    private readonly InputAction m_Player_SwitchSlot;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -247,6 +335,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
+        public InputAction @SwitchView => m_Wrapper.m_Player_SwitchView;
+        public InputAction @UseItem => m_Wrapper.m_Player_UseItem;
+        public InputAction @DropItem => m_Wrapper.m_Player_DropItem;
+        public InputAction @SwitchSlot => m_Wrapper.m_Player_SwitchSlot;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -265,6 +357,18 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @SwitchView.started += instance.OnSwitchView;
+            @SwitchView.performed += instance.OnSwitchView;
+            @SwitchView.canceled += instance.OnSwitchView;
+            @UseItem.started += instance.OnUseItem;
+            @UseItem.performed += instance.OnUseItem;
+            @UseItem.canceled += instance.OnUseItem;
+            @DropItem.started += instance.OnDropItem;
+            @DropItem.performed += instance.OnDropItem;
+            @DropItem.canceled += instance.OnDropItem;
+            @SwitchSlot.started += instance.OnSwitchSlot;
+            @SwitchSlot.performed += instance.OnSwitchSlot;
+            @SwitchSlot.canceled += instance.OnSwitchSlot;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -278,6 +382,18 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @SwitchView.started -= instance.OnSwitchView;
+            @SwitchView.performed -= instance.OnSwitchView;
+            @SwitchView.canceled -= instance.OnSwitchView;
+            @UseItem.started -= instance.OnUseItem;
+            @UseItem.performed -= instance.OnUseItem;
+            @UseItem.canceled -= instance.OnUseItem;
+            @DropItem.started -= instance.OnDropItem;
+            @DropItem.performed -= instance.OnDropItem;
+            @DropItem.canceled -= instance.OnDropItem;
+            @SwitchSlot.started -= instance.OnSwitchSlot;
+            @SwitchSlot.performed -= instance.OnSwitchSlot;
+            @SwitchSlot.canceled -= instance.OnSwitchSlot;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -300,5 +416,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
+        void OnSwitchView(InputAction.CallbackContext context);
+        void OnUseItem(InputAction.CallbackContext context);
+        void OnDropItem(InputAction.CallbackContext context);
+        void OnSwitchSlot(InputAction.CallbackContext context);
     }
 }

@@ -30,6 +30,11 @@ public class InputManager : MonoBehaviour
 
         inputActions.Player.Jump.performed += OnJumpPerformed;
         inputActions.Player.Interact.performed += OnInteractPerformed;
+
+        inputActions.Player.SwitchView.performed += OnSwitchView;
+        inputActions.Player.UseItem.performed += OnUseItem;
+        inputActions.Player.DropItem.performed += OnDropItem;
+        inputActions.Player.SwitchSlot.performed += OnSwitchSlot;
     }
 
 
@@ -60,5 +65,25 @@ public class InputManager : MonoBehaviour
     private void OnInteractPerformed(InputAction.CallbackContext context)
     {
         CurrentReceiver?.OnInteract();
+    }
+
+    private void OnSwitchView(InputAction.CallbackContext context)
+    {
+        CurrentReceiver?.OnSwitchView();
+    }
+
+    private void OnUseItem(InputAction.CallbackContext context)
+    {
+        CurrentReceiver?.OnUseItem();
+    }
+
+    private void OnDropItem(InputAction.CallbackContext context)
+    {
+        CurrentReceiver?.OnDropItem();
+    }
+
+    private void OnSwitchSlot(InputAction.CallbackContext context)
+    {
+        CurrentReceiver?.OnSwitchSlot();
     }
 }

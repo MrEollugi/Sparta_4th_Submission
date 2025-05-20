@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerJump : MonoBehaviour, IPlayerInputReceiver
+public class PlayerJump : MonoBehaviour
 {
     private float jumpForce = 6f;
     private float groundCheckDistance = 0.2f;

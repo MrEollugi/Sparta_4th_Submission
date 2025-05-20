@@ -11,6 +11,8 @@ public class Player: MonoBehaviour
     public PlayerJump Jump { get; private set; }
     public PlayerInputHandler InputReceiver { get; private set; }
 
+    public PlayerInventory Inventory { get; private set; }
+
     private void Awake()
     {
         if(Instance != null && Instance != this)
@@ -25,6 +27,7 @@ public class Player: MonoBehaviour
         Movement = GetComponent<PlayerMovement>();
         Jump = GetComponent<PlayerJump>();
         InputReceiver = GetComponent<PlayerInputHandler>();
+        Inventory = GetComponent<PlayerInventory>();
     }
 
     public float GetCurrentHealth()

@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ec6ff603e387dc41ad112ab319aa586, type: 3}
   m_Name: HealthPotion
   m_EditorClassIdentifier: 
-  itemName: 
-  description: 
-  icon: {fileID: 0}
-  itemType: 0
-  healAmount: 20
-  speedBoostAmount: 0
-  duration: 0
+  itemName: healing potion
+  description: need healing
+  icon: {fileID: 21300000, guid: e12e1a0e4a7453c42932e826264d0473, type: 3}
+  itemPrefab: {fileID: 2430732469407171618, guid: f177080a139995b4c8d69799658bea8f, type: 3}
+  effects:
+  - {fileID: 11400000, guid: 30ca2babc76e5234eb1cdcc170475a45, type: 2}
