@@ -28,6 +28,8 @@ public class InputManager : MonoBehaviour
         inputActions.Player.Move.performed += OnMovePerformed;
         inputActions.Player.Move.canceled += OnMoveCanceled;
 
+        inputActions.Player.Dash.performed += OnDashPerformed;
+
         inputActions.Player.Jump.performed += OnJumpPerformed;
         inputActions.Player.Interact.performed += OnInteractPerformed;
 
@@ -85,5 +87,10 @@ public class InputManager : MonoBehaviour
     private void OnSwitchSlot(InputAction.CallbackContext context)
     {
         CurrentReceiver?.OnSwitchSlot();
+    }
+
+    private void OnDashPerformed(InputAction.CallbackContext context)
+    {
+        CurrentReceiver?.OnDash();
     }
 }

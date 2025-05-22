@@ -66,4 +66,9 @@ public class PlayerInputHandler : MonoBehaviour, IPlayerInputReceiver
         inventory.SwitchSlot();
     }
 
+    public void OnDash()
+    {
+        playerMovement?.TryDash();
+    }
+
 }
