@@ -76,26 +76,31 @@ public class PlayerMovement : MonoBehaviour
 
     private void ApplyMovement(Vector3 platformVelocity)
     {
+        Vector3 inputDir = GetInputDirectionWorld();
+        Vector3 targetVelocity = inputDir * maxSpeed;
+
         if (inputDirection.sqrMagnitude > 0.01f)
         {
-            Vector3 targetDirection = GetInputDirectionWorld();
-            RotateTowards(targetDirection);
-
-            Vector3 targetVelocity = targetDirection * maxSpeed;
-            float alignment = Vector3.Dot(currentVelocity.normalized, targetDirection);
-
-            float dynamicAccel = alignment < -0.5f ? acceleration * 3f : alignment < 0f ? acceleration * 2f : acceleration;
-            currentVelocity = Vector3.MoveTowards(currentVelocity, targetVelocity, dynamicAccel * Time.fixedDeltaTime);
+            RotateTowards(inputDir);
         }
-        else
+
+        if (IsWallInFront())
         {
-            float speedRatio = currentVelocity.magnitude / maxSpeed;
-            float dynamicDecel = deceleration + (1f - speedRatio) * 20f;
-            currentVelocity = Vector3.MoveTowards(currentVelocity, Vector3.zero, dynamicDecel * Time.fixedDeltaTime);
+            if (Vector3.Dot(currentVelocity.normalized, inputDir) > 0.5f)
+            {
+                targetVelocity = Vector3.zero;
+            }
         }
+
+        float alignment = Vector3.Dot(currentVelocity.normalized, inputDir);
+        float dynamicAccel = alignment < -0.5f ? acceleration * 3f :
+                             alignment < 0f ? acceleration * 2f :
+                             acceleration;
+
+        currentVelocity = Vector3.MoveTowards(currentVelocity, targetVelocity, dynamicAccel * Time.fixedDeltaTime);
 
         Vector3 velocity = currentVelocity + new Vector3(platformVelocity.x, 0f, platformVelocity.z);
-        velocity.y = IsGroundedOnPlatform() ? platformVelocity.y : rb.velocity.y;
+        velocity.y = (currentPlatform != null && IsGroundedOnPlatform()) ? platformVelocity.y : rb.velocity.y;
         rb.velocity = velocity;
     }
 
@@ -197,6 +202,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 origin = transform.position + Vector3.up * 0.5f;
         Vector3 dir = GetInputDirectionWorld();
 
-        return Physics.Raycast(origin, dir, distance);
+        float radius = 0.25f;
+        return Physics.SphereCast(origin, radius, dir, out _, distance);
     }
 }
