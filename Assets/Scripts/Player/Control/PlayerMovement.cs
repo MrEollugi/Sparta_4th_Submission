@@ -9,36 +9,34 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
-    private float moveSpeed = 20f;
-    private float currentMoveSpeed;
-    private float dashMultiplier = 3f;
-    private float dashDuration = 0.5f;
-    private float dashDecayTime = 0.5f;
+    private float maxSpeed = 60f;
+    private float acceleration = 15f;
+    private float deceleration = 30f;
+
+    private float dashDuration = 2f;
     private float dashStaminaCost = 10f;
 
-    private float acceleration = 15f;
-    private float deceleration = 20f;
-    private float maxSpeed = 60f;
-
     private Vector3 currentVelocity = Vector3.zero;
-
-    private Coroutine speedBoostCoroutine;
-
     private Vector2 inputDirection;
     private Rigidbody rb;
 
     private bool isDashing = false;
     private float dashTimeRemaining = 0f;
-    private float dashDecayTimer = 0f;
-    //private bool isGrounded = false;
-    //private bool isOnIce = false;
 
     private PlayerStats playerStats;
+
+    [Header("Camera FOV")]
+    [SerializeField] private Camera playerCamera;
+    private float baseFOV = 60f;
+    private float maxFOV = 120f;
+    private float fovLerpSpeed = 10f;
+
+    private Coroutine speedBoostCoroutine;
+    private float boostMultiplier = 1.5f;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        currentMoveSpeed = moveSpeed;
         playerStats = GetComponent<PlayerStats>();
     }
 
@@ -47,42 +45,45 @@ public class PlayerMovement : MonoBehaviour
         inputDirection = direction;
     }
 
+    private void Update()
+    {
+        float speedRatio = currentVelocity.magnitude / maxSpeed;
+        float targetFOV = Mathf.Lerp(baseFOV, maxFOV, speedRatio);
+        playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * fovLerpSpeed);
+        CameraController.Instance?.AdjustOffsetByFOV(playerCamera.fieldOfView, maxFOV);
+    }
+
     private void FixedUpdate()
     {
         HandleDashDecay();
 
-        Vector3 targetDirection = Vector3.zero;
-
         if (inputDirection.sqrMagnitude > 0.01f)
         {
-            Vector3 camForward = Camera.main.transform.forward;
-            Vector3 camRight = Camera.main.transform.right;
+            Vector3 targetDirection = GetInputDirectionWorld();
 
-            camForward.y = 0f;
-            camRight.y = 0f;
-            camForward.Normalize();
-            camRight.Normalize();
+            Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * 10f);
 
-            targetDirection = (camForward * inputDirection.y + camRight * inputDirection.x).normalized;
+            Vector3 targetVelocity = targetDirection * maxSpeed;
+            float alignment = Vector3.Dot(currentVelocity.normalized, targetDirection);
 
-            if (targetDirection != Vector3.zero)
+            if (alignment < -0.5f)
             {
-                Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * 10f);
+                currentVelocity = Vector3.MoveTowards(currentVelocity, Vector3.zero, acceleration * 3f * Time.fixedDeltaTime);
             }
+            else
+            {
+                float dynamicAccel = (alignment < 0f) ? acceleration * 2f : acceleration;
 
-            Vector3 targetVelocity = targetDirection * currentMoveSpeed;
-            targetVelocity = Vector3.ClampMagnitude(targetVelocity, maxSpeed);
-
-            currentVelocity = Vector3.MoveTowards(
-                currentVelocity,
-                targetVelocity,
-                acceleration * Time.fixedDeltaTime
-            );
+                currentVelocity = Vector3.MoveTowards(currentVelocity, targetVelocity, dynamicAccel * Time.fixedDeltaTime);
+            }
         }
         else
         {
-            currentVelocity = Vector3.MoveTowards(currentVelocity, Vector3.zero, deceleration * Time.fixedDeltaTime);
+            float speedRatio = currentVelocity.magnitude / maxSpeed;
+            float dynamicDecel = 30f + (1f - speedRatio) * 20f;
+
+            currentVelocity = Vector3.MoveTowards(currentVelocity, Vector3.zero, dynamicDecel * Time.fixedDeltaTime);
         }
 
         rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z);
@@ -91,37 +92,39 @@ public class PlayerMovement : MonoBehaviour
     public void TryDash()
     {
         if (playerStats.GetCurrentStamina() < dashStaminaCost) return;
-
         if (isDashing && dashTimeRemaining > 0f) return;
 
         playerStats.UseStamina(dashStaminaCost);
-
         isDashing = true;
         dashTimeRemaining = dashDuration;
-        dashDecayTimer = dashDecayTime;
-        currentMoveSpeed = moveSpeed * dashMultiplier;
+
+        Vector3 dashDir;
+
+        if (inputDirection.sqrMagnitude > 0.01f)
+        {
+            dashDir = GetInputDirectionWorld();
+        }
+        else if (currentVelocity.sqrMagnitude > 0.01f)
+        {
+            dashDir = currentVelocity.normalized;
+        }
+        else
+        {
+            dashDir = transform.forward;
+        }
+
+        currentVelocity = dashDir * maxSpeed;
     }
 
     private void HandleDashDecay()
     {
         if (!isDashing) return;
 
-        if(dashTimeRemaining > 0f)
-        {
-            dashTimeRemaining -= Time.deltaTime;
-        }
-        else
-        {
-            dashDecayTimer -= Time.deltaTime;
+        dashTimeRemaining -= Time.deltaTime;
 
-            float t = 1f - (dashDecayTimer / dashDecayTime);
-            currentMoveSpeed = Mathf.Lerp(moveSpeed * dashMultiplier, moveSpeed, t);
-
-            if(dashDecayTimer <= 0f)
-            {
-                currentMoveSpeed = moveSpeed;
-                isDashing = false;
-            }
+        if (dashTimeRemaining <= 0f)
+        {
+            isDashing = false;
         }
     }
 
@@ -136,23 +139,24 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator SpeedBoostRoutine(float boostAmount, float duration)
     {
-        currentMoveSpeed += boostAmount;
+        Vector3 originalVelocity = currentVelocity;
+        currentVelocity = Vector3.ClampMagnitude(currentVelocity * boostAmount, maxSpeed);
+
         yield return new WaitForSeconds(duration);
-        currentMoveSpeed = moveSpeed;
+
+        if (currentVelocity.magnitude > originalVelocity.magnitude)
+        {
+            currentVelocity = originalVelocity;
+        }
     }
 
-    //private void UpdateGroundCheck()
-    //{
-    //    Ray ray = new Ray(transform.position, Vector3.down);
-    //    if(Physics.Raycast(ray, out RaycastHit hit, 1.1f))
-    //    {
-    //        isGrounded = true;
-    //        isOnIce = hit.collider.CompareTag("Ice");
-    //    }
-    //    else
-    //    {
-    //        isGrounded= false;
-    //        isOnIce= false;
-    //    }
-    //}
+    private Vector3 GetInputDirectionWorld()
+    {
+        Vector3 camForward = Camera.main.transform.forward;
+        Vector3 camRight = Camera.main.transform.right;
+        camForward.y = 0f; camRight.y = 0f;
+        camForward.Normalize(); camRight.Normalize();
+        return (camForward * inputDirection.y + camRight * inputDirection.x).normalized;
+    }
+
 }

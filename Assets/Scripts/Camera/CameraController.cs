@@ -79,4 +79,14 @@ public class CameraController : MonoBehaviour
         isFirstPerson = !isFirstPerson;
         currentOffset = isFirstPerson ? firstPersonOffset : thirdPersonOffset;
     }
+
+    public void AdjustOffsetByFOV(float fov, float maxFov)
+    {
+        float ratio = Mathf.InverseLerp(60f, maxFov, fov);
+
+        Vector3 fastOffset = new Vector3(0, 1.5f, -1.5f);
+        Vector3 normalOffset = isFirstPerson ? firstPersonOffset : thirdPersonOffset;
+        
+        currentOffset = Vector3.Lerp(normalOffset, fastOffset, ratio);
+    }
 }
