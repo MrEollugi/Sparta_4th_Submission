@@ -9,12 +9,18 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
-    private float moveSpeed = 5f;
+    private float moveSpeed = 20f;
     private float currentMoveSpeed;
-    private float dashMultiplier = 2f;
+    private float dashMultiplier = 3f;
     private float dashDuration = 0.5f;
     private float dashDecayTime = 0.5f;
     private float dashStaminaCost = 10f;
+
+    private float acceleration = 15f;
+    private float deceleration = 20f;
+    private float maxSpeed = 60f;
+
+    private Vector3 currentVelocity = Vector3.zero;
 
     private Coroutine speedBoostCoroutine;
 
@@ -45,7 +51,9 @@ public class PlayerMovement : MonoBehaviour
     {
         HandleDashDecay();
 
-        if(inputDirection.sqrMagnitude > 0.01f)
+        Vector3 targetDirection = Vector3.zero;
+
+        if (inputDirection.sqrMagnitude > 0.01f)
         {
             Vector3 camForward = Camera.main.transform.forward;
             Vector3 camRight = Camera.main.transform.right;
@@ -55,17 +63,29 @@ public class PlayerMovement : MonoBehaviour
             camForward.Normalize();
             camRight.Normalize();
 
-            Vector3 moveDir = camForward * inputDirection.y + camRight * inputDirection.x;
+            targetDirection = (camForward * inputDirection.y + camRight * inputDirection.x).normalized;
 
-            Quaternion targetRotation = Quaternion.LookRotation(moveDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * 10f);
+            if (targetDirection != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * 10f);
+            }
 
-            rb.velocity = new Vector3(moveDir.x * currentMoveSpeed, rb.velocity.y, moveDir.z * currentMoveSpeed);
+            Vector3 targetVelocity = targetDirection * currentMoveSpeed;
+            targetVelocity = Vector3.ClampMagnitude(targetVelocity, maxSpeed);
+
+            currentVelocity = Vector3.MoveTowards(
+                currentVelocity,
+                targetVelocity,
+                acceleration * Time.fixedDeltaTime
+            );
         }
         else
         {
-            rb.velocity = new Vector3(0, rb.velocity.y, 0);
+            currentVelocity = Vector3.MoveTowards(currentVelocity, Vector3.zero, deceleration * Time.fixedDeltaTime);
         }
+
+        rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z);
     }
 
     public void TryDash()
