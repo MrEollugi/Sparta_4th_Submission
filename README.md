@@ -7,7 +7,10 @@ A Unity prototype featuring player movement, item interaction, and modular gamep
 ## Features
 
 ### Core Mechanics
-- **Player Movement & Jumping** using Rigidbody physics
+- **Player Movement & Jumping** using Rigidbody physics  
+  - **Double Jump** with grounded check and limited jump count  
+  - **Directional Jump Boost** when jumping opposite to current movement  
+  - **Increased gravity during falling** for tighter control
 - **Third-Person / First-Person Camera Toggle** (Tab)
 - **Interactable Objects** using Raycast (1st-person only)
 
@@ -32,7 +35,10 @@ A Unity prototype featuring player movement, item interaction, and modular gamep
 - **Inspect UI** shows object info when looking at items
 
 ### Environment Interactives
-- Jump pads that launch the player upward on contact
+- **Jump Pads** that launch the player upward on contact
+- **Moving Platforms** that travel between fixed points
+  - Supports looping and ping-pong modes
+  - Player automatically moves along with the platform via velocity syncing
 
 ### System For Test
 - H: Reduce HP (10)
@@ -51,10 +57,8 @@ A Unity prototype featuring player movement, item interaction, and modular gamep
 
 ## Upcoming Tasks
 
-- [ ] 2-1: Stamina & status UI
-- [ ] 2-8: Interactable UI prompts (e.g. "Press E to open")
-- [ ] More item types (e.g. shield, double jump, etc.)
 - [ ] Saving/Loading
+- [ ] restart game
 
 ---
 
