@@ -15,8 +15,6 @@ public class PlayerInteract: MonoBehaviour
         Ray ray = new Ray(transform.position + Vector3.up, transform.forward);
         if(Physics.Raycast(ray, out RaycastHit hit, interactRange, interactableLayer))
         {
-            Debug.Log($"[PlayerInteract] 상호작용: {hit.collider.name}");
-
             if(hit.collider.TryGetComponent<IInteractable>(out var interactable))
             {
                 interactable.Interact();

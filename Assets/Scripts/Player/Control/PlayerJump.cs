@@ -14,9 +14,12 @@ public class PlayerJump : MonoBehaviour
 
     private Rigidbody rb;
 
+    private PlayerMovement playerMovement;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        playerMovement = GetComponent<PlayerMovement>();
     }
 
     private void Update()
@@ -24,7 +27,7 @@ public class PlayerJump : MonoBehaviour
         Vector3 origin = transform.position + Vector3.up * 0.1f;
         isGrounded = Physics.Raycast(origin, Vector3.down, groundCheckDistance, groundLayer);
 
-        if(isGrounded && rb.velocity.y <= 0.01f)
+        if (isGrounded && rb.velocity.y <= 0.01f)
         {
             isJumping = false;
         }
@@ -44,8 +47,14 @@ public class PlayerJump : MonoBehaviour
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isJumping = true;
+
+            if (playerMovement.CurrentPlatform != null)
+            {
+                playerMovement.SetCurrentPlatform(null);
+            }
         }
     }
+
 
     public void OnInteract() { }
 }

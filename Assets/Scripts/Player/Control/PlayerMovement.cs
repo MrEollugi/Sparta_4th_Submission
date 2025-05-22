@@ -13,17 +13,9 @@ public class PlayerMovement : MonoBehaviour
     private float acceleration = 15f;
     private float deceleration = 30f;
 
+    [Header("Dash Settings")]
     private float dashDuration = 2f;
-    private float dashStaminaCost = 10f;
-
-    private Vector3 currentVelocity = Vector3.zero;
-    private Vector2 inputDirection;
-    private Rigidbody rb;
-
-    private bool isDashing = false;
-    private float dashTimeRemaining = 0f;
-
-    private PlayerStats playerStats;
+    private float dashStaminaCost = 50f;
 
     [Header("Camera FOV")]
     [SerializeField] private Camera playerCamera;
@@ -31,8 +23,20 @@ public class PlayerMovement : MonoBehaviour
     private float maxFOV = 120f;
     private float fovLerpSpeed = 10f;
 
+    private Vector3 currentVelocity = Vector3.zero;
+    private Vector2 inputDirection;
+    private Rigidbody rb;
+    private PlayerStats playerStats;
+
+    private bool isDashing = false;
+    private float dashTimeRemaining = 0f;
+
     private Coroutine speedBoostCoroutine;
     private float boostMultiplier = 1.5f;
+
+    private MovingPlatform currentPlatform;
+    public MovingPlatform CurrentPlatform => currentPlatform;
+
 
     private void Awake()
     {
@@ -47,59 +51,78 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        UpdateFOV();
+        HandleDashDecay();
+    }
+
+    private void FixedUpdate()
+    {
+        Vector3 platformVelocity = currentPlatform != null ? currentPlatform.DeltaMovement / Time.fixedDeltaTime : Vector3.zero;
+        ApplyMovement(platformVelocity);
+    }
+
+    private void LateUpdate()
+    {
+        transform.position = rb.position;
+    }
+
+    private void UpdateFOV()
+    {
         float speedRatio = currentVelocity.magnitude / maxSpeed;
         float targetFOV = Mathf.Lerp(baseFOV, maxFOV, speedRatio);
         playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * fovLerpSpeed);
         CameraController.Instance?.AdjustOffsetByFOV(playerCamera.fieldOfView, maxFOV);
     }
 
-    private void FixedUpdate()
+    private void ApplyMovement(Vector3 platformVelocity)
     {
-        HandleDashDecay();
-
         if (inputDirection.sqrMagnitude > 0.01f)
         {
             Vector3 targetDirection = GetInputDirectionWorld();
-
-            Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * 10f);
+            RotateTowards(targetDirection);
 
             Vector3 targetVelocity = targetDirection * maxSpeed;
             float alignment = Vector3.Dot(currentVelocity.normalized, targetDirection);
 
-            if (alignment < -0.5f)
-            {
-                currentVelocity = Vector3.MoveTowards(currentVelocity, Vector3.zero, acceleration * 3f * Time.fixedDeltaTime);
-            }
-            else
-            {
-                float dynamicAccel = (alignment < 0f) ? acceleration * 2f : acceleration;
-
-                currentVelocity = Vector3.MoveTowards(currentVelocity, targetVelocity, dynamicAccel * Time.fixedDeltaTime);
-            }
+            float dynamicAccel = alignment < -0.5f ? acceleration * 3f : alignment < 0f ? acceleration * 2f : acceleration;
+            currentVelocity = Vector3.MoveTowards(currentVelocity, targetVelocity, dynamicAccel * Time.fixedDeltaTime);
         }
         else
         {
             float speedRatio = currentVelocity.magnitude / maxSpeed;
-            float dynamicDecel = 30f + (1f - speedRatio) * 20f;
-
+            float dynamicDecel = deceleration + (1f - speedRatio) * 20f;
             currentVelocity = Vector3.MoveTowards(currentVelocity, Vector3.zero, dynamicDecel * Time.fixedDeltaTime);
         }
 
-        rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z);
+        Vector3 velocity = currentVelocity + new Vector3(platformVelocity.x, 0f, platformVelocity.z);
+        velocity.y = IsGroundedOnPlatform() ? platformVelocity.y : rb.velocity.y;
+        rb.velocity = velocity;
+    }
+
+    private void RotateTowards(Vector3 direction)
+    {
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * 10f);
+    }
+
+    private Vector3 GetInputDirectionWorld()
+    {
+        Vector3 camForward = Camera.main.transform.forward;
+        Vector3 camRight = Camera.main.transform.right;
+        camForward.y = 0f; camRight.y = 0f;
+        camForward.Normalize(); camRight.Normalize();
+        return (camForward * inputDirection.y + camRight * inputDirection.x).normalized;
     }
 
     public void TryDash()
     {
-        if (playerStats.GetCurrentStamina() < dashStaminaCost) return;
-        if (isDashing && dashTimeRemaining > 0f) return;
+        if (playerStats.GetCurrentStamina() < dashStaminaCost || (isDashing && dashTimeRemaining > 0f)) return;
 
         playerStats.UseStamina(dashStaminaCost);
         isDashing = true;
         dashTimeRemaining = dashDuration;
 
         Vector3 dashDir;
-
         if (inputDirection.sqrMagnitude > 0.01f)
         {
             dashDir = GetInputDirectionWorld();
@@ -150,13 +173,30 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private Vector3 GetInputDirectionWorld()
+    public void SetCurrentPlatform(MovingPlatform platform)
     {
-        Vector3 camForward = Camera.main.transform.forward;
-        Vector3 camRight = Camera.main.transform.right;
-        camForward.y = 0f; camRight.y = 0f;
-        camForward.Normalize(); camRight.Normalize();
-        return (camForward * inputDirection.y + camRight * inputDirection.x).normalized;
+        if (currentPlatform != platform)
+        {
+            currentPlatform = platform;
+        }
     }
 
+    bool IsGroundedOnPlatform()
+    {
+        if (currentPlatform == null) return false;
+
+        Vector3 origin = transform.position + Vector3.up * 0.05f;
+        float rayLength = 0.25f;
+
+        return Physics.Raycast(origin, Vector3.down, out RaycastHit hit, rayLength)
+               && hit.collider.GetComponent<MovingPlatform>() == currentPlatform;
+    }
+
+    private bool IsWallInFront(float distance = 0.6f)
+    {
+        Vector3 origin = transform.position + Vector3.up * 0.5f;
+        Vector3 dir = GetInputDirectionWorld();
+
+        return Physics.Raycast(origin, dir, distance);
+    }
 }
