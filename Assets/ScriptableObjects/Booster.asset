@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ec6ff603e387dc41ad112ab319aa586, type: 3}
   m_Name: Booster
   m_EditorClassIdentifier: 
-  itemName: 
-  description: 
+  itemName: Boost Stone
+  description: Get faster
   icon: {fileID: 21300000, guid: e61976ceaf6919c47853f5a7ea09288b, type: 3}
-  itemPrefab: {fileID: 2430732469407171618, guid: f177080a139995b4c8d69799658bea8f, type: 3}
+  itemPrefab: {fileID: 6425553558250234507, guid: 106e5f22924efca4b946c37d08c573ef, type: 3}
   effects:
   - {fileID: 11400000, guid: f2b2d1f11afd1a446af99fefa6791655, type: 2}

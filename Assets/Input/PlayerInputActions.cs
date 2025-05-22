@@ -89,6 +89,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Dash"",
+                    ""type"": ""Button"",
+                    ""id"": ""afe1f964-4d51-4e53-941e-4026e492ec67"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -245,6 +254,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""SwitchSlot"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f04b0bfc-c8a6-48d4-adbb-521d906fb09d"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -260,6 +280,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_UseItem = m_Player.FindAction("UseItem", throwIfNotFound: true);
         m_Player_DropItem = m_Player.FindAction("DropItem", throwIfNotFound: true);
         m_Player_SwitchSlot = m_Player.FindAction("SwitchSlot", throwIfNotFound: true);
+        m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -328,6 +349,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_UseItem;
     private readonly InputAction m_Player_DropItem;
     private readonly InputAction m_Player_SwitchSlot;
+    private readonly InputAction m_Player_Dash;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -339,6 +361,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @UseItem => m_Wrapper.m_Player_UseItem;
         public InputAction @DropItem => m_Wrapper.m_Player_DropItem;
         public InputAction @SwitchSlot => m_Wrapper.m_Player_SwitchSlot;
+        public InputAction @Dash => m_Wrapper.m_Player_Dash;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -369,6 +392,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @SwitchSlot.started += instance.OnSwitchSlot;
             @SwitchSlot.performed += instance.OnSwitchSlot;
             @SwitchSlot.canceled += instance.OnSwitchSlot;
+            @Dash.started += instance.OnDash;
+            @Dash.performed += instance.OnDash;
+            @Dash.canceled += instance.OnDash;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -394,6 +420,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @SwitchSlot.started -= instance.OnSwitchSlot;
             @SwitchSlot.performed -= instance.OnSwitchSlot;
             @SwitchSlot.canceled -= instance.OnSwitchSlot;
+            @Dash.started -= instance.OnDash;
+            @Dash.performed -= instance.OnDash;
+            @Dash.canceled -= instance.OnDash;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -420,5 +449,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnUseItem(InputAction.CallbackContext context);
         void OnDropItem(InputAction.CallbackContext context);
         void OnSwitchSlot(InputAction.CallbackContext context);
+        void OnDash(InputAction.CallbackContext context);
     }
 }

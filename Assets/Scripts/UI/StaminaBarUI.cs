@@ -1,18 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StaminaBarUI : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private Image staminaImage;
 
-    // Update is called once per frame
-    void Update()
+    private void LateUpdate()
     {
-        
+        if (Player.Instance != null && staminaImage != null)
+        {
+            float stamina = Player.Instance.Stats.GetCurrentStamina();
+            float maxStamina = Player.Instance.Stats.GetMaxStamina();
+            staminaImage.fillAmount = stamina / maxStamina;
+        }
     }
 }

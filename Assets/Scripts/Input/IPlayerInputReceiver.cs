@@ -10,5 +10,6 @@ public interface IPlayerInputReceiver
     void OnUseItem();
     void OnDropItem();
     void OnSwitchSlot();
+    void OnDash();
 
 }
