@@ -9,7 +9,7 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
-    private float maxSpeed = 60f;
+    private float maxSpeed = 50f;
     private float acceleration = 15f;
     private float deceleration = 30f;
 
@@ -110,7 +110,7 @@ public class PlayerMovement : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * 10f);
     }
 
-    private Vector3 GetInputDirectionWorld()
+    public Vector3 GetInputDirectionWorld()
     {
         Vector3 camForward = Camera.main.transform.forward;
         Vector3 camRight = Camera.main.transform.right;
