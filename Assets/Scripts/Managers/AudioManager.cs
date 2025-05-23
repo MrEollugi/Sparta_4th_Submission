@@ -4,18 +4,8 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
+    #region Singleton
     public static AudioManager Instance;
-
-    [Header("Audio Sources")]
-    [SerializeField] private AudioSource sfxSource;
-    [SerializeField] private AudioSource bgmSource;
-
-    [Header("SFX Clips")]
-    public AudioClip jumpClip;
-    public AudioClip pickupClip;
-    public AudioClip uiClickClip;
-    public AudioClip useItemClip;
-    public AudioClip switchSlotClip;
 
     private void Awake()
     {
@@ -28,6 +18,30 @@ public class AudioManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    #endregion
+
+    #region Audio Sources
+
+    [Header("Audio Sources")]
+    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioSource bgmSource;
+
+    #endregion
+
+    #region Audio Clips
+
+    [Header("SFX Clips")]
+    public AudioClip jumpClip;
+    public AudioClip pickupClip;
+    public AudioClip uiClickClip;
+    public AudioClip useItemClip;
+    public AudioClip switchSlotClip;
+
+    #endregion
+
+    #region Public SFX Playback Methods
+
+    // AudioClip을 SFX소스로 재생
     public void PlaySFX(AudioClip clip)
     {
         if (clip == null)
@@ -46,4 +60,6 @@ public class AudioManager : MonoBehaviour
     public void PlayPickup() => PlaySFX(pickupClip);
     public void PlayUseItem() => PlaySFX(useItemClip);
     public void PlaySwitchSlot() => PlaySFX(switchSlotClip);
+
+    #endregion
 }
