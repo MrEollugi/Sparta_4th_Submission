@@ -29,10 +29,10 @@ A Unity prototype featuring player movement, item interaction, and modular gamep
   - Speed Boost (temporarily increases move speed)
 
 ### UI System
-- **Health Bar UI** dynamically updates with HP
-- **Inventory UI** with icon and selection indicator
-- **UIManager** centralizes all UI components
-- **Inspect UI** shows object info when looking at items
+- Dynamic **Health Bar**
+- Minimal **Inventory UI**
+- **Inspect UI** shows object info on gaze (first-person mode)
+- **Pause Menu** with resume, restart, and quit
 
 ### Environment Interactives
 - **Jump Pads** that launch the player upward on contact
@@ -55,10 +55,21 @@ A Unity prototype featuring player movement, item interaction, and modular gamep
 
 ---
 
-## Upcoming Tasks
+## ✅ Completed Tasks
 
-- [ ] Saving/Loading
-- [ ] restart game
+- [x] Double jump system
+- [x] Modular item effects
+- [x] Inventory and UI system
+- [x] Moving platform system
+- [x] Pause Menu with resume/restart/quit
+
+
+## 🔜 Upcoming Tasks
+
+- [ ] Save/Load system
+- [ ] Seamless scene restart without flicker or state desync
+- [ ] ESC key toggle pause menu from anywhere
+- [ ] Fix restart bug causing camera/player desync or jitter
 
 ---
 
