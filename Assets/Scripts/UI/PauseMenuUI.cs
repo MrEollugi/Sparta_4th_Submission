@@ -28,16 +28,19 @@ public class PauseMenuUI : MonoBehaviour
 
     public void OnClickResume()
     {
+        AudioManager.Instance?.PlayUIClick();
         GameManager.Instance.ResumeGame();
     }
 
     public void OnClickRestart()
     {
+        AudioManager.Instance?.PlayUIClick();
         GameManager.Instance.RestartGame();
     }
 
     public void OnClickQuit()
     {
+        AudioManager.Instance?.PlayUIClick();
         GameManager.Instance.QuitGame();
     }
     #endregion

@@ -37,6 +37,7 @@ public class PlayerInventory : MonoBehaviour
             {
                 slots[i] = item;
                 Debug.Log($"[Inventory] Picked up item: {item.itemName}");
+                AudioManager.Instance?.PlayPickup();
                 UpdateUI();
                 return true;
             }
@@ -58,6 +59,7 @@ public class PlayerInventory : MonoBehaviour
             effect.ApplyEffect(Player.Instance);
         }
 
+        AudioManager.Instance?.PlayUseItem();
         slots[selectedIndex] = null;
         UpdateUI();
     }
@@ -87,6 +89,7 @@ public class PlayerInventory : MonoBehaviour
     public void SwitchSlot()
     {
         selectedIndex = 1 - selectedIndex;
+        AudioManager.Instance?.PlaySwitchSlot();
         UpdateUI();
     }
     #endregion

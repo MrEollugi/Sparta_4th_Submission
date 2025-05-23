@@ -60,6 +60,8 @@ public class PlayerJump : MonoBehaviour
     {
         if (currentJumpCount < maxJumpCount)
         {
+            AudioManager.Instance?.PlayJump();
+
             Vector3 inputDir = playerMovement.GetInputDirectionWorld();
             Vector3 horizontalVelocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
