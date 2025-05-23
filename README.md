@@ -1,4 +1,4 @@
-Last Updated: 2024-05-23
+Last Updated: 2024-05-23 ➤ 2025-05-23
 # Submission Prototype
 
 A Unity prototype featuring player movement, item interaction, and modular gameplay systems — built as part of a multi-feature gameplay demo.
@@ -45,6 +45,13 @@ A Unity prototype featuring player movement, item interaction, and modular gamep
 - **Scene lighting initialized at runtime** via LightSettingInitializer
   - Ambient lighting controlled through `RenderSettings`
   - Directional light intensity, color, and shadows configured automatically
+
+### Audio System
+- Centralized **AudioManager** handles all BGM and SFX playback
+- **AudioMixer** used to separate and control volume of SFX and BGM
+- All core gameplay events now include appropriate sound effects:
+  - Jump, item pickup, slot switch, UI button clicks, etc.
+- Volume routing supports future integration with in-game settings
 
 ### System For Test
 - H: Reduce HP (10)
