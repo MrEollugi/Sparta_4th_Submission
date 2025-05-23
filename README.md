@@ -71,6 +71,11 @@ A Unity prototype featuring player movement, item interaction, and modular gamep
 - [ ] ESC key toggle pause menu from anywhere
 - [ ] Fix restart bug causing camera/player desync or jitter
 
+## 🐛 Known Issues
+
+- Restarting the game via SceneManager.LoadScene sometimes causes a brief desync between camera and player.
+- Fixed platforms may occasionally stutter when combined with manual Rigidbody control.
+
 ---
 
 ## Author
