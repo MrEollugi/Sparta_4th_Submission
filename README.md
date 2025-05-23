@@ -1,3 +1,4 @@
+Last Updated: 2024-05-23
 # Submission Prototype
 
 A Unity prototype featuring player movement, item interaction, and modular gameplay systems — built as part of a multi-feature gameplay demo.
@@ -40,6 +41,11 @@ A Unity prototype featuring player movement, item interaction, and modular gamep
   - Supports looping and ping-pong modes
   - Player automatically moves along with the platform via velocity syncing
 
+### Lighting
+- **Scene lighting initialized at runtime** via LightSettingInitializer
+  - Ambient lighting controlled through `RenderSettings`
+  - Directional light intensity, color, and shadows configured automatically
+
 ### System For Test
 - H: Reduce HP (10)
 - J: Restore HP (10)
@@ -62,7 +68,7 @@ A Unity prototype featuring player movement, item interaction, and modular gamep
 - [x] Inventory and UI system
 - [x] Moving platform system
 - [x] Pause Menu with resume/restart/quit
-
+- [x] LightSettingInitializer for ambient and directional lighting
 
 ## 🔜 Upcoming Tasks
 
