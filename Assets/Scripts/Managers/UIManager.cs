@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
+    #region Singleton
     public static UIManager Instance { get; private set; }
-
-    public InspectUIManager Inspect;
-    public InventoryUI Inventory;
 
     private void Awake()
     {
@@ -19,4 +17,27 @@ public class UIManager : MonoBehaviour
 
         Instance = this;
     }
+
+    #endregion
+
+    #region UI References
+
+    public InspectUIManager Inspect;
+    public InventoryUI Inventory;
+    public HealthBarUI HealthBar;
+    public StaminaBarUI StaminaBar;
+    public PauseMenuUI PauseMenu;
+
+    #endregion
+
+    #region Pause Menu Control
+    public void ShowPauseMenu()
+    {
+        PauseMenu.Show();
+    }
+    public void HidePauseMenu()
+    {
+        PauseMenu.Hide();
+    }
+    #endregion
 }
