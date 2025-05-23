@@ -4,9 +4,17 @@ using UnityEngine.Android;
 
 public class PlayerStats : MonoBehaviour
 {
+    #region Health Variables
+
     [Header("Health Settings")]
     public float maxHealth = 100f;
     private float currentHealth;
+
+    public bool isDead => currentHealth <= 0;
+
+    #endregion
+
+    #region Stamina Variables
 
     [Header("Stamina Settings")]
     public float maxStamina = 100f;
@@ -16,7 +24,9 @@ public class PlayerStats : MonoBehaviour
 
     private float lastStaminaUsedTime = -999f;
 
-    public bool isDead => currentHealth <= 0;
+    #endregion
+
+    #region Unity Callbacks
 
     private void Awake()
     {
@@ -25,13 +35,20 @@ public class PlayerStats : MonoBehaviour
 
     private void Update()
     {
+        //테스트용 키 입력 처리
         if (Input.GetKeyDown(KeyCode.H)) TakeDamage(10f);
         if (Input.GetKeyDown(KeyCode.J)) Heal(10f);
+
+        // 스태미나 자연 회복 처리
         if(Time.time >= lastStaminaUsedTime + staminaRegenDelay)
         {
             RecoverStamina(Time.deltaTime * staminaRegenRate);
         }
     }
+
+    #endregion
+
+    #region Health Methods
 
     public void TakeDamage(float amount)
     {
@@ -65,8 +82,12 @@ public class PlayerStats : MonoBehaviour
 
     private void Die()
     {
-
+        // 아직 미구현
     }
+
+    #endregion
+
+    #region Stamina Methods
 
     public float GetCurrentStamina()
     {
@@ -76,6 +97,11 @@ public class PlayerStats : MonoBehaviour
     public float GetMaxStamina()
     {
         return maxStamina;
+    }
+
+    public void ResetStamina()
+    {
+        currentStamina = maxStamina;
     }
 
     public void UseStamina(float amount)
@@ -88,5 +114,7 @@ public class PlayerStats : MonoBehaviour
     {
         currentStamina = Mathf.Clamp(currentStamina + amount, 0f, maxStamina);
     }
+
+    #endregion
 }
 

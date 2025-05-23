@@ -8,6 +8,8 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
+    #region Movement Settings
+
     [Header("Movement Settings")]
     private float maxSpeed = 50f;
     private float acceleration = 15f;
@@ -16,6 +18,15 @@ public class PlayerMovement : MonoBehaviour
     [Header("Dash Settings")]
     private float dashDuration = 2f;
     private float dashStaminaCost = 50f;
+    private bool isDashing = false;
+    private float dashTimeRemaining = 0f;
+
+    private Coroutine speedBoostCoroutine;
+    private float boostMultiplier = 1.5f;
+
+    #endregion
+
+    #region FOV Settings
 
     [Header("Camera FOV")]
     [SerializeField] private Camera playerCamera;
@@ -23,25 +34,27 @@ public class PlayerMovement : MonoBehaviour
     private float maxFOV = 120f;
     private float fovLerpSpeed = 10f;
 
+    #endregion
+
+    #region Components & State
+
     private Vector3 currentVelocity = Vector3.zero;
     private Vector2 inputDirection;
     private Rigidbody rb;
     private PlayerStats playerStats;
 
-    private bool isDashing = false;
-    private float dashTimeRemaining = 0f;
-
-    private Coroutine speedBoostCoroutine;
-    private float boostMultiplier = 1.5f;
-
     private MovingPlatform currentPlatform;
     public MovingPlatform CurrentPlatform => currentPlatform;
 
+    #endregion
+
+    #region Unity Callbacks
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         playerStats = GetComponent<PlayerStats>();
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
     }
 
     public void OnMove(Vector2 direction)
@@ -66,13 +79,9 @@ public class PlayerMovement : MonoBehaviour
         transform.position = rb.position;
     }
 
-    private void UpdateFOV()
-    {
-        float speedRatio = currentVelocity.magnitude / maxSpeed;
-        float targetFOV = Mathf.Lerp(baseFOV, maxFOV, speedRatio);
-        playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * fovLerpSpeed);
-        CameraController.Instance?.AdjustOffsetByFOV(playerCamera.fieldOfView, maxFOV);
-    }
+    #endregion
+
+    #region Movement Logic
 
     private void ApplyMovement(Vector3 platformVelocity)
     {
@@ -84,23 +93,31 @@ public class PlayerMovement : MonoBehaviour
             RotateTowards(inputDir);
         }
 
-        if (IsWallInFront())
+        if (IsWallInFront() && Vector3.Dot(currentVelocity.normalized, inputDir) > 0.5f)
         {
-            if (Vector3.Dot(currentVelocity.normalized, inputDir) > 0.5f)
-            {
-                targetVelocity = Vector3.zero;
-            }
+            targetVelocity = Vector3.zero;
         }
 
         float alignment = Vector3.Dot(currentVelocity.normalized, inputDir);
-        float dynamicAccel = alignment < -0.5f ? acceleration * 3f :
-                             alignment < 0f ? acceleration * 2f :
-                             acceleration;
+        float dynamicAccel;
+        if (alignment < -0.5f)
+        {
+            dynamicAccel = acceleration * 3f;
+        }
+        else if (alignment < 0f)
+        {
+            dynamicAccel = acceleration * 2f;
+        }
+        else
+        {
+            dynamicAccel = acceleration;
+        }
 
         currentVelocity = Vector3.MoveTowards(currentVelocity, targetVelocity, dynamicAccel * Time.fixedDeltaTime);
 
         Vector3 velocity = currentVelocity + new Vector3(platformVelocity.x, 0f, platformVelocity.z);
         velocity.y = (currentPlatform != null && IsGroundedOnPlatform()) ? platformVelocity.y : rb.velocity.y;
+
         rb.velocity = velocity;
     }
 
@@ -118,6 +135,10 @@ public class PlayerMovement : MonoBehaviour
         camForward.Normalize(); camRight.Normalize();
         return (camForward * inputDirection.y + camRight * inputDirection.x).normalized;
     }
+
+    #endregion
+
+    #region Dash Logic
 
     public void TryDash()
     {
@@ -156,6 +177,10 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Speed Boost
+
     public IEnumerator ApplySpeedBoost(float boostAmount, float duration)
     {
         if (speedBoostCoroutine != null)
@@ -178,6 +203,10 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Platform Support
+
     public void SetCurrentPlatform(MovingPlatform platform)
     {
         if (currentPlatform != platform)
@@ -197,6 +226,17 @@ public class PlayerMovement : MonoBehaviour
                && hit.collider.GetComponent<MovingPlatform>() == currentPlatform;
     }
 
+    #endregion
+
+    #region Utilities
+    private void UpdateFOV()
+    {
+        float speedRatio = currentVelocity.magnitude / maxSpeed;
+        float targetFOV = Mathf.Lerp(baseFOV, maxFOV, speedRatio);
+        playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * fovLerpSpeed);
+        CameraController.Instance?.AdjustOffsetByFOV(playerCamera.fieldOfView, maxFOV);
+    }
+
     private bool IsWallInFront(float distance = 0.6f)
     {
         Vector3 origin = transform.position + Vector3.up * 0.5f;
@@ -205,4 +245,6 @@ public class PlayerMovement : MonoBehaviour
         float radius = 0.25f;
         return Physics.SphereCast(origin, radius, dir, out _, distance);
     }
+
+    #endregion
 }

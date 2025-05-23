@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class JumpPad : MonoBehaviour
 {
+    #region JumpPad Settings
+
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private string playerTag = "Player";
+
+    #endregion
+
+    #region Unity Callbacks
 
     private void OnTriggerEnter(Collider other)
     {
@@ -19,4 +25,6 @@ public class JumpPad : MonoBehaviour
             }
         }
     }
+
+    #endregion
 }

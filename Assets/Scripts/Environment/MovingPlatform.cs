@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MovingPlatform : MonoBehaviour
 {
+    #region Movement Settings
+
     [SerializeField] private Transform[] points;
     [SerializeField] private float speed = 2f;
     [SerializeField] private bool isLooping = true;
@@ -12,12 +14,20 @@ public class MovingPlatform : MonoBehaviour
     private int currentIndex = 0;
     private int direction = 1;
 
+    #endregion
+
+    #region Components & State
+
     private Rigidbody rb;
     private Vector3 lastPosition;
     public Vector3 DeltaMovement { get; private set; }
 
+    #endregion
+
+    #region Unity Callbacks
     private void Start()
     {
+        // 유효한 이동 지점이 2개 이상 존재하는지 확인
         if (points == null || points.Length < 2)
         {
             enabled = false;
@@ -26,6 +36,7 @@ public class MovingPlatform : MonoBehaviour
 
         rb = GetComponent<Rigidbody>();
 
+        // 로컬 포인트를 월드 좌표로 변환
         worldPoints = new Vector3[points.Length];
         for (int i = 0; i < points.Length; i++)
         {
@@ -43,11 +54,16 @@ public class MovingPlatform : MonoBehaviour
         DeltaMovement = nextPosition - lastPosition;
         lastPosition = nextPosition;
 
+        // 도착 확인
         if (Vector3.Distance(nextPosition, target) < 0.01f)
         {
             AdvanceToNextPoint();
         }
     }
+
+    #endregion
+
+    #region Movement Logic
 
     private void AdvanceToNextPoint()
     {
@@ -73,6 +89,10 @@ public class MovingPlatform : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Player Syncing
+
     private void OnCollisionStay(Collision collision)
     {
         if (!collision.collider.CompareTag("Player")) return;
@@ -95,6 +115,10 @@ public class MovingPlatform : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Gizmos
+
     private void OnDrawGizmosSelected()
     {
         if (points == null || points.Length < 2) return;
@@ -110,4 +134,6 @@ public class MovingPlatform : MonoBehaviour
             Gizmos.DrawLine(points[^1].position, points[0].position);
         }
     }
+
+    #endregion
 }

@@ -6,20 +6,29 @@ using TMPro;
 
 public class InspectUIManager : MonoBehaviour
 {
+    #region Singleton
+
     public static InspectUIManager Instance;
+
+    private void Awake()
+    {
+        Instance = this;
+        // 시작 시 UI 비활성화
+        panel.SetActive(false);
+    }
+
+    #endregion
+
+    #region UI References
 
     [SerializeField] private GameObject panel;
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private Image iconImage;
 
+    #endregion
 
-    private void Awake()
-    {
-        Instance = this;
-        panel.SetActive(false);
-    }
-
+    #region Public Methods
     public void Show(ItemData item)
     {
         titleText.text = item.itemName;
@@ -32,4 +41,5 @@ public class InspectUIManager : MonoBehaviour
     {
         panel.SetActive(false);
     }
+    #endregion
 }

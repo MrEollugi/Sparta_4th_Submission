@@ -5,12 +5,18 @@ using UnityEngine;
 
 public class PlayerInputHandler : MonoBehaviour, IPlayerInputReceiver
 {
+    #region References
+
     private PlayerInventory inventory;
     private CameraController cameraController;
 
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private PlayerJump playerJump;
     [SerializeField] private PlayerInteract playerInteract;
+
+    #endregion
+
+    #region Unity Callbacks
 
     private void Awake()
     {
@@ -30,6 +36,10 @@ public class PlayerInputHandler : MonoBehaviour, IPlayerInputReceiver
         inventory = Player.Instance?.Inventory;
         cameraController = CameraController.Instance;
     }
+
+    #endregion
+
+    #region Input Callbacks
 
     public void OnMove(Vector2 direction)
     {
@@ -71,4 +81,5 @@ public class PlayerInputHandler : MonoBehaviour, IPlayerInputReceiver
         playerMovement?.TryDash();
     }
 
+    #endregion
 }
